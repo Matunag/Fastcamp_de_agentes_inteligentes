@@ -5,7 +5,7 @@ from datetime import datetime
 from google.adk.tools import ToolContext
 
 
-OPENWEATHER_API_KEY = "a9b6fdec44154571baed50fec03b41a3"
+OPENWEATHER_API_KEY = "CHAVE_API"
 
 
 def obter_clima(cidade: str, tool_context: ToolContext):

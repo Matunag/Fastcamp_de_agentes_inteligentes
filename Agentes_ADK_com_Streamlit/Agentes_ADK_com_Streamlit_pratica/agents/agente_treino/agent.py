@@ -33,9 +33,9 @@ async def execute(request):
     )
     prompt = (
         f"Usuário tem objetivo: {request['objetivo']}, "
-        f"nível de condicionamento: {request['nivel']}, "
-        f"disponibilidade de {request['dias_por_semana']} dias por semana "
-        f"e {request['minutos_por_dia']} minutos por dia. "
+        f"nível de condicionamento: {request['condicionamento']}, "
+        f"disponibilidade de {request['disponibilidade_dias']} dias por semana "
+        f"e {request['disponibilidade_minutos']} minutos por dia. "
         f"Monte um treino diário com aquecimento, exercícios principais e alongamento. "
         f"Responda em JSON usando a chave 'treino' com um objeto onde cada chave é uma fase do treino."
     )

@@ -32,7 +32,7 @@ async def execute(request):
     )
     prompt = (
         f"Usuário tem objetivo: {request['objetivo']} e "
-        f"nível de condicionamento: {request['nivel']}. "
+        f"nível de condicionamento: {request['condicionamento']}. "
         f"Gere 3 frases motivacionais personalizadas para esse perfil. "
         f"Responda em JSON usando a chave 'frases' com uma lista de strings."
     )

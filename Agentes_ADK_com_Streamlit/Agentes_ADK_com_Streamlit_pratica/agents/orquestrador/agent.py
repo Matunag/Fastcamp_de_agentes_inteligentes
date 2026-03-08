@@ -29,10 +29,9 @@ async def executar(requisicao):
     )
 
     prompt = (
-        f"Crie uma rotina personalizada para {requisicao['nome']}. "
-        f"Objetivo: {requisicao['objetivo']}. "
-        f"Dias disponíveis por semana: {requisicao['dias_disponiveis']}. "
-        f"Restrições alimentares: {requisicao['restricoes_alimentares']}. "
+        f"Construa um treino para o usuário considerando o objetivo: {resquisicao['objetivo']}, as limitações: {resquisicao['limitacoes']}, o condicionamento atual: {resquisicao['condicionamento']}, a disponibilidade de dias na semana: {resquisicao['disponibilidade_dias']} e a disponibilidade de minutos no dia {resquisicao['disponibilidade_minutos']}"
+        f"Construa uma dieta para o usuário considerando o objetivo: {resquisicao['objetivo']}, as limitações: {resquisicao['limitacoes']} e o orcamento: {requisicao['orcamento']"
+        f"Para finalizar faça frases motivacionais considerando o objetivo: {resquisicao['objetivo']} e o condicionamento atual: {resquisicao['condicionamento']}"
         f"Chame os agentes de dieta, treino e motivação para montar o plano completo."
     )
 

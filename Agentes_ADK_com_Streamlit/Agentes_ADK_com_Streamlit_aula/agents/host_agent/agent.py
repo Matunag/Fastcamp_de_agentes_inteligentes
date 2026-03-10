@@ -30,7 +30,7 @@ async def execute(request):
     prompt = (
         f"Plan a trip to {request['destination']} from {request['start_date']} to {request['end_date']} "
         f"within a total budget of {request['budget']}. Call the flights, stays, and activities agents for results."
-    )
+    )   
     message = types.Content(role="user", parts=[types.Part(text=prompt)])
     async for event in runner.run_async(user_id=USER_ID, session_id=SESSION_ID, new_message=message):
         if event.is_final_response():

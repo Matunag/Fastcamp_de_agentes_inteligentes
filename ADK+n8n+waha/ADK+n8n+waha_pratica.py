@@ -149,7 +149,7 @@ orquestrador = Agent(
     instruction=(
         "Você é um agente orquestrador de um sistema de chatbot no whatsapp para uma loja"
         "Assim que você for chamado use a ferramenta 'get_functions' para mostrar ao usuário o que você pode fazer"
-        "Você também tem dois agentes a sua disposição, para cuidar dos produtos use o 'produtos_agente', para cuidar de redirecionamentos de contatos use o 'agente_redirecionador'"
+        "Você também tem dois agentes a sua disposição, para cuidar dos produ+tos use o 'produtos_agente', para cuidar de redirecionamentos de contatos use o 'agente_redirecionador'"
     ),
     tools=[get_functions],
     sub_agents=[produtos_agente, agente_redirecionador]

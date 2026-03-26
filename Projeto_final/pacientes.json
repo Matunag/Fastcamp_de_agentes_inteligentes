@@ -1,0 +1,210 @@
+{
+    "07135789340": {
+        "nome": "Carlos Eduardo Ferreira",
+        "idade": 58,
+        "whatsapp": "+5562911111001",
+        "sexo": "Masculino",
+        "historico": "Diabetes tipo 2, Hipertensão arterial, Dislipidemia. Faz uso contínuo de Metformina 850mg, Losartana 50mg e Sinvastatina 20mg.",
+        "consultas": [
+            {
+                "data": "10/01/2026 09:00",
+                "sintomas": "Paciente relata tontura frequente pela manhã, visão embaçada e fadiga persistente.",
+                "diagnostico": "Hipertensão descompensada. Glicemia de jejum: 187 mg/dL.",
+                "tratamento": "- Ajuste de Losartana para 100mg\n- Manter Metformina\n- Dieta com restrição de sódio e carboidratos simples\n- Retorno em 30 dias",
+                "observacoes": "Paciente relata dificuldade de adesão à dieta. Encaminhado para nutricionista."
+            },
+            {
+                "data": "12/02/2026 10:30",
+                "sintomas": "Melhora da tontura. Pressão 145/90. Glicemia 162 mg/dL.",
+                "diagnostico": "Controle parcial da hipertensão e diabetes.",
+                "tratamento": "- Manter Losartana 100mg\n- Adicionar Glibenclamida 5mg\n- Exercícios aeróbicos 3x/semana",
+                "observacoes": "Paciente iniciou acompanhamento nutricional. Evolução positiva mas lenta."
+            },
+            {
+                "data": "15/03/2026 08:00",
+                "sintomas": "Sem tonturas. Pressão 132/85. Glicemia 138 mg/dL. Relata dores nos pés à noite.",
+                "diagnostico": "Melhora do quadro hipertensivo. Investigar neuropatia diabética periférica.",
+                "tratamento": "- Solicitar eletroneuromiografia\n- Iniciar Gabapentina 300mg à noite\n- Manter demais medicações",
+                "observacoes": "Exames laboratoriais: HbA1c 7,8%. Colesterol LDL 118. Acompanhamento mensal."
+            }
+        ],
+        "agendamentos": [
+            {
+                "data_hora": "15/04/2026 08:00",
+                "especialidade": "Endocrinologia",
+                "profissional": "Dr. Fábio Resende",
+                "local": "Clínica Vida Plena",
+                "motivo": "Retorno mensal - controle diabetes e hipertensão"
+            },
+            {
+                "data_hora": "22/04/2026 14:00",
+                "especialidade": "Neurologia",
+                "profissional": "Dra. Patrícia Nunes",
+                "local": "Hospital Santa Cruz",
+                "motivo": "Avaliação de neuropatia periférica - resultado eletroneuromiografia"
+            }
+        ]
+    },
+    "18342675091": {
+        "nome": "Fernanda Oliveira Braga",
+        "idade": 34,
+        "whatsapp": "+5562922222002",
+        "sexo": "Feminino",
+        "historico": "Lúpus eritematoso sistêmico (LES) diagnosticado em 2019. Hipotireoidismo. Uso contínuo de Hidroxicloroquina 400mg, Prednisona 5mg e Levotiroxina 75mcg.",
+        "consultas": [
+            {
+                "data": "05/02/2026 11:00",
+                "sintomas": "Fadiga intensa, dores articulares em mãos e joelhos, rash malar discreto.",
+                "diagnostico": "Surto leve de LES. TSH dentro do esperado (2,1 mUI/L).",
+                "tratamento": "- Aumentar Prednisona para 20mg por 10 dias, depois reduzir gradualmente\n- Protetor solar fator 70 diariamente\n- Repouso relativo",
+                "observacoes": "Solicitar anti-dsDNA, complemento C3/C4 e hemograma completo."
+            },
+            {
+                "data": "05/03/2026 11:00",
+                "sintomas": "Melhora das articulações. Fadiga persiste. Leve queda de cabelo.",
+                "diagnostico": "Regressão do surto. Alopecia possivelmente relacionada ao LES ou corticoide.",
+                "tratamento": "- Reduzir Prednisona para 7,5mg\n- Suplementação de Vitamina D 4000UI\n- Manter Hidroxicloroquina",
+                "observacoes": "Anti-dsDNA positivo fraco. C3 levemente reduzido. Encaminhar dermatologista para alopecia."
+            }
+        ],
+        "agendamentos": [
+            {
+                "data_hora": "02/04/2026 10:00",
+                "especialidade": "Reumatologia",
+                "profissional": "Dra. Camila Assis",
+                "local": "Clínica Reumacare",
+                "motivo": "Retorno pós-surto - avaliação da redução do corticoide"
+            },
+            {
+                "data_hora": "10/04/2026 15:30",
+                "especialidade": "Dermatologia",
+                "profissional": "Dr. André Lopes",
+                "local": "Derma Center",
+                "motivo": "Avaliação de alopecia associada ao LES"
+            }
+        ]
+    },
+    "29451386705": {
+        "nome": "Roberto Alves Teixeira",
+        "idade": 42,
+        "whatsapp": "+5562933333003",
+        "sexo": "Masculino",
+        "historico": "Ansiedade generalizada, Depressão moderada, Síndrome do intestino irritável (SII). Uso de Escitalopram 20mg e Clonazepam 0,5mg (uso eventual).",
+        "consultas": [
+            {
+                "data": "08/01/2026 14:00",
+                "sintomas": "Insônia, pensamentos acelerados, episódios de choro sem motivo aparente, dores abdominais frequentes.",
+                "diagnostico": "Episódio depressivo moderado com sintomas ansiosos. SII exacerbada por estresse.",
+                "tratamento": "- Iniciar Escitalopram 10mg por 2 semanas, depois aumentar para 20mg\n- Psicoterapia semanal\n- Dieta low-FODMAP para SII",
+                "observacoes": "Paciente trabalha em ambiente de alta pressão. Sugerido avaliação de afastamento temporário."
+            },
+            {
+                "data": "20/02/2026 14:00",
+                "sintomas": "Melhora do humor. Insônia parcialmente resolvida. Dores abdominais menos frequentes.",
+                "diagnostico": "Boa resposta ao Escitalopram. SII com melhora parcial.",
+                "tratamento": "- Manter Escitalopram 20mg\n- Adicionar Probiótico diário\n- Continuar psicoterapia",
+                "observacoes": "Paciente relata melhora na qualidade de vida. Iniciou caminhadas matinais."
+            },
+            {
+                "data": "20/03/2026 14:00",
+                "sintomas": "Episódio de ansiedade aguda na semana anterior após reunião no trabalho. Abdômen estável.",
+                "diagnostico": "Ansiedade situacional. SII controlada.",
+                "tratamento": "- Manter medicações\n- Técnicas de respiração e mindfulness\n- Reavaliar em 60 dias",
+                "observacoes": "Psicóloga relata progresso significativo. Sem necessidade de ajuste medicamentoso no momento."
+            }
+        ],
+        "agendamentos": [
+            {
+                "data_hora": "20/05/2026 14:00",
+                "especialidade": "Psiquiatria",
+                "profissional": "Dra. Renata Borges",
+                "local": "Instituto Mente Sã",
+                "motivo": "Reavaliação bimestral - ansiedade e depressão"
+            }
+        ]
+    },
+    "30564817283": {
+        "nome": "Mariana Costa Drummond",
+        "idade": 27,
+        "whatsapp": "+5562944444004",
+        "sexo": "Feminino",
+        "historico": "Asma moderada persistente, Rinite alérgica. Uso de Budesonida inalatória 400mcg/dia e Loratadina 10mg.",
+        "consultas": [
+            {
+                "data": "01/03/2026 09:30",
+                "sintomas": "Crise de broncoespasmo noturno 3x na última semana. Coriza intensa. SpO2 96% em repouso.",
+                "diagnostico": "Asma moderada descompensada, possivelmente por exposição a alérgenos.",
+                "tratamento": "- Adicionar Salbutamol spray de resgate\n- Aumentar Budesonida para 800mcg por 30 dias\n- Evitar exposição a poeira e mofo",
+                "observacoes": "Paciente mora em apartamento antigo. Recomendado capa antiácaro e purificador de ar."
+            },
+            {
+                "data": "28/03/2026 09:30",
+                "sintomas": "Redução das crises para 1x na semana. Coriza melhorou. SpO2 98%.",
+                "diagnostico": "Melhora significativa do controle asmático.",
+                "tratamento": "- Reduzir Budesonida para 400mcg após 15 dias\n- Manter Loratadina\n- Espirometria de controle em 3 meses",
+                "observacoes": "Paciente adotou medidas ambientais. Boa adesão ao tratamento."
+            }
+        ],
+        "agendamentos": [
+            {
+                "data_hora": "28/06/2026 10:00",
+                "especialidade": "Pneumologia",
+                "profissional": "Dr. Henrique Saraiva",
+                "local": "Clínica Respira Bem",
+                "motivo": "Espirometria de controle e reavaliação da asma"
+            }
+        ]
+    },
+    "41675928360": {
+        "nome": "Paulo Sérgio Monteiro",
+        "idade": 65,
+        "whatsapp": "+5562955555005",
+        "sexo": "Masculino",
+        "historico": "Insuficiência cardíaca com fração de ejeção reduzida (ICFER), Fibrilação atrial paroxística, Doença renal crônica estágio 3. Uso de Carvedilol 25mg, Sacubitril/Valsartana 97/103mg, Furosemida 40mg, Apixabana 5mg.",
+        "consultas": [
+            {
+                "data": "15/01/2026 08:30",
+                "sintomas": "Dispneia ao esforço moderado, edema em membros inferiores 2+/4+, ganho de 3kg em 1 semana.",
+                "diagnostico": "Descompensação de ICC. Creatinina 1,9 mg/dL. BNP elevado.",
+                "tratamento": "- Aumentar Furosemida para 80mg por 5 dias\n- Restrição hídrica 1,5L/dia\n- Dieta hipossódica rigorosa\n- Internação não necessária no momento",
+                "observacoes": "Monitorar peso diariamente. Retornar se ganho > 2kg em 2 dias ou piora da dispneia."
+            },
+            {
+                "data": "25/01/2026 08:30",
+                "sintomas": "Perda de 2,8kg após ajuste do diurético. Dispneia leve apenas a grandes esforços. Edema 1+/4+.",
+                "diagnostico": "Compensação parcial da ICC.",
+                "tratamento": "- Reduzir Furosemida para 60mg/dia\n- Manter demais medicações\n- ECG: FA com resposta ventricular controlada",
+                "observacoes": "Função renal estável. Creatinina 2,0 mg/dL. Solicitar ecocardiograma de controle."
+            },
+            {
+                "data": "10/03/2026 08:30",
+                "sintomas": "Estável. Sem edema. Dispneia apenas em esforços intensos. Peso estável.",
+                "diagnostico": "ICC compensada. Ecocardiograma: FE 35%, sem piora em relação ao anterior.",
+                "tratamento": "- Manter esquema atual\n- Reabilitação cardíaca supervisionada\n- Retorno em 60 dias",
+                "observacoes": "Paciente bem orientado quanto aos sinais de alarme. Boa adesão medicamentosa."
+            }
+        ],
+        "agendamentos": [
+            {
+                "data_hora": "10/05/2026 08:30",
+                "especialidade": "Cardiologia",
+                "profissional": "Dra. Isabela Furtado",
+                "local": "Instituto do Coração de Goiânia",
+                "motivo": "Retorno bimestral - ICC e FA"
+            },
+            {
+                "data_hora": "18/05/2026 07:00",
+                "especialidade": "Nefrologia",
+                "profissional": "Dr. Marcos Vinícius",
+                "local": "Clínica Renal GO",
+                "motivo": "Acompanhamento DRC estágio 3 - função renal e eletrólitos"
+            }
+        ],
+        "observacoes_paciente": [
+            {
+                "data": "26/03/2026 11:27",
+                "observacao": "Paciente relata que ontem à noite sentiu o coração bater diferente por cerca de 10 minutos, mas o sintoma passou sozinho."
+            }
+        ]
+    }
+}

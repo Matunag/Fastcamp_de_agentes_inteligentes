@@ -1,9 +1,4 @@
-from google.adk.agents import Agent
-from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
-from google.genai import types
-import json
-
+# mesma estrutura do agente_dieta — apenas instruction e prompt mudam
 agente_treino = Agent(
     name="agente_treino",
     model="gemini-2.5-flash",
@@ -16,42 +11,41 @@ agente_treino = Agent(
     )
 )
 
+# sessão e runner independentes — cada agente tem seu próprio contexto
 session_service = InMemorySessionService()
-runner = Runner(
-    agent=agente_treino,
-    app_name="treino_app",
-    session_service=session_service
-)
-USER_ID = "user_treino"
+runner = Runner(agent=agente_treino, app_name="treino_app", session_service=session_service)
+USER_ID    = "user_treino"
 SESSION_ID = "session_treino"
 
 async def execute(request):
     await session_service.create_session(
-        app_name="treino_app",
-        user_id=USER_ID,
-        session_id=SESSION_ID
+        app_name="treino_app", user_id=USER_ID, session_id=SESSION_ID
     )
+
+    # prompt usa dados de condicionamento e disponibilidade — específicos para treino
     prompt = (
-        f"Usuário tem objetivo: {request['objetivo']}, "
-        f"nível de condicionamento: {request['condicionamento']}, "
-        f"disponibilidade de {request['disponibilidade_dias']} dias por semana "
-        f"e {request['disponibilidade_minutos']} minutos por dia. "
-        f"Monte um treino diário com aquecimento, exercícios principais e alongamento. "
-        f"Responda em JSON usando a chave 'treino' com um objeto onde cada chave é uma fase do treino."
+        f"Usuário tem objetivo: {request['objetivo']}, condicionamento: {request['condicionamento']}, "
+        f"disponibilidade de {request['disponibilidade_dias']} dias/semana "
+        f"e {request['disponibilidade_minutos']} min/dia. "
+        f"Monte um treino com aquecimento, exercícios principais e alongamento. "
+        f"Responda em JSON com a chave 'treino'."
     )
     message = types.Content(role="user", parts=[types.Part(text=prompt)])
-    async for event in runner.run_async(user_id=USER_ID, session_id=SESSION_ID, new_message=message):
+
+    async for event in runner.run_async(
+            user_id=USER_ID, session_id=SESSION_ID, new_message=message):
         if event.is_final_response():
             response_text = event.content.parts[0].text
             try:
-                clean = response_text.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+                # mesma limpeza de markdown e parse JSON do agente_dieta
+                clean = (response_text.strip()
+                         .removeprefix("```json").removeprefix("```")
+                         .removesuffix("```").strip())
                 parsed = json.loads(clean)
                 if "treino" in parsed and isinstance(parsed["treino"], dict):
                     return {"treino": parsed["treino"]}
                 else:
-                    print("Chave 'treino' ausente ou formato inválido")
                     return {"treino": response_text}
             except json.JSONDecodeError as e:
                 print("Falha ao parsear JSON:", e)
-                print("Conteúdo da resposta:", response_text)
                 return {"treino": response_text}

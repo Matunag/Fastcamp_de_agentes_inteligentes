@@ -20,7 +20,10 @@ qdrant = QdrantClient(
 
 def buscar_artigos(query: str) -> dict:
     """
-    Busca os 3 artigos mais relevantes no banco de embeddings com base na query do usuário.
+    Busca os 3 artigos mais próximos no banco vetorial Qdrant com base em uma query.
+
+    Converte a query em embedding via Mistral (mesmo modelo usado nos embeddings) e realiza busca por similaridade
+    cosseno na coleção "Estudos" do Qdrant.
     """
     result = mistral.embeddings.create(
         model="mistral-embed",
@@ -39,7 +42,7 @@ def buscar_artigos(query: str) -> dict:
 
     for r in resultados.points:
         artigos.append({
-            "score": round(r.score, 4),
+            "score": round(r.score, 4), #mostrar a similaridade do artigo e query.
             "abstract": r.payload.get("texto", ""),
         })
 
@@ -84,7 +87,9 @@ runner = Runner(
 
 
 async def buscar(query: str, user_id: str = "usuario_001"):
-
+    """
+    Executa uma busca assíncrona enviando a query do usuário ao agente orquestrador, retornando a resposta da IA.
+    """
     session_id = f"sessao_{user_id}"
 
     try:

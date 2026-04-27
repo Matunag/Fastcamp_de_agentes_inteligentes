@@ -22,6 +22,10 @@ if "Estudos" not in collections:
     )
 
 def chunk_text(texto: str, tamanho: int = 500) -> list[str]:
+    """
+    Divide um texto em chunks menores baseado em número de palavras para facilitar a criação dos vetores.
+    Tendo o texto a ser dividido e o número máximo de palavras por chunk como entrada;
+    """
     palavras = texto.split()
     chunks = []
     for i in range(0, len(palavras), tamanho):
@@ -29,13 +33,16 @@ def chunk_text(texto: str, tamanho: int = 500) -> list[str]:
     return chunks
 
 def gerar_embedding(texto: str) -> list[float]:
+    """
+    Gera o vetor de embedding de um texto usando o modelo Mistral.
+    """
     result = mistral.embeddings.create(
         model="mistral-embed",
         inputs=[texto]
     )
     return result.data[0].embedding
 
-with open("train.txt", "r", encoding="utf-8") as f:
+with open("train.txt", "r", encoding="utf-8") as f: #abre o arquivo.
     texto = f.read()
 
 chunks = chunk_text(texto)
@@ -43,7 +50,7 @@ print(f"{len(chunks)} chunks gerados.")
 
 points = []
 
-for i, chunk in enumerate(chunks):
+for i, chunk in enumerate(chunks): #faz os embeddings e indexação.
     try:
         embedding = gerar_embedding(chunk)
         points.append(PointStruct(
@@ -54,7 +61,7 @@ for i, chunk in enumerate(chunks):
         time.sleep(0.5)
 
         if i % 100 == 0:
-            print(f"{i}/{len(chunks)} indexados...")
+            print(f"{i}/{len(chunks)} indexados...") #print para mostrar o progresso.
             cliente.upsert(collection_name="Estudos", points=points)
             points = []
 

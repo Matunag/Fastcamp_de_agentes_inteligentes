@@ -165,17 +165,18 @@ runner = Runner(
 class Payload(BaseModel):
     mensagem: str
     chat_id: str
-
-@app.post("/run")
-async def run (payload: Payload):
-    session_id = payload.chat_id.replace("@", "_").replace(".", "_")
+	
+#Essa função é o que deixa esse card um pouco mais único, pois configura como os sistemas podem se comunicar com outros sistemas.
+@app.post("/run") #Nesse caso o que acontece é o seguinte: quando acontece uma requisição do tipo "post" no caminho "/run" a seguinte função acontece
+async def run (payload: Payload): #recebe o payload
+    session_id = payload.chat_id.replace("@", "_").replace(".", "_") #Como a linguagem não aceita "@", troca "@" por "_", e "." por "_".
     try:
-        await session_service.create_session(app_name="chatbot_app", user_id=session_id, session_id=session_id)
+        await session_service.create_session(app_name="chatbot_app", user_id=session_id, session_id=session_id) #tenta criar a sessão.
     except:
-        pass
-    message = types.Content(role="user", parts=[types.Part(text=payload.mensagem)])
-    async for event in runner.run_async(user_id=session_id, session_id=session_id, new_message=message):
-        if event.is_final_response():
-            resposta = event.content.parts[0].text
+        pass #se não deu considera que já existe.
+    message = types.Content(role="user", parts=[types.Part(text=payload.mensagem)])#estrutura a mensagem para que a llm possa interpretar.
+    async for event in runner.run_async(user_id=session_id, session_id=session_id, new_message=message):# Executa o fluxo do agente de forma assíncrona (streaming de eventos)
+        if event.is_final_response():#se o último evento for a resposta final
+            resposta = event.content.parts[0].text#pega o texto
             #send_message(chat_id=payload.chat_id, payload=resposta)  estava dando problema então fiz esse passo no n8n.
-            return {"resposta": event.content.parts[0].text}
+            return {"resposta": event.content.parts[0].text} #retorna a resposta dada.

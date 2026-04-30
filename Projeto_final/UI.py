@@ -6,7 +6,6 @@ import asyncio
 from datetime import datetime
 from pydantic import BaseModel, ValidationError, field_validator
 from dotenv import load_dotenv
-import os
 
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
@@ -14,11 +13,15 @@ from google.genai import types
 
 from Agentes.agente_medico import agente_medico
 
+# Carrega variáveis de ambiente do arquivo .env
 load_dotenv()
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
+# Caminho do arquivo JSON que armazena os pacientes
 ARQUIVO = "pacientes.json"
 
+# Inicializa sessões em memória e o runner do agente médico para o chatbot
 session_service = InMemorySessionService()
 runner = Runner(
     agent=agente_medico,
@@ -26,7 +29,9 @@ runner = Runner(
     session_service=session_service
 )
 
+
 def carregar_dados():
+    """Lê o arquivo JSON de pacientes. Retorna {} se não existir ou estiver corrompido."""
     if not os.path.exists(ARQUIVO):
         return {}
     try:
@@ -35,53 +40,86 @@ def carregar_dados():
     except json.JSONDecodeError:
         return {}
 
+
 def salvar_dados(dados):
+    """Persiste o dicionário de pacientes no arquivo JSON com indentação."""
     with open(ARQUIVO, "w", encoding="utf-8") as f:
         json.dump(dados, f, indent=4, ensure_ascii=False)
 
+
 def parse_data_hora(valor):
+    """Converte string no formato dd/mm/AAAA HH:MM para objeto datetime.
+    Retorna None em caso de falha, evitando erros em comparações de datas.
+    """
     try:
         return datetime.strptime(valor, "%d/%m/%Y %H:%M")
     except (TypeError, ValueError):
         return None
 
+
 def validar_cpf(cpf):
+    """Valida o CPF pelo algoritmo oficial dos dois dígitos verificadores.
+    Remove caracteres não numéricos e lança ValueError se inválido.
+    Retorna apenas os 11 dígitos numéricos se válido.
+    """
     cpf_digits = re.sub(r"\D", "", cpf or "")
+
+    # CPF deve ter exatamente 11 dígitos
     if len(cpf_digits) != 11:
         raise ValueError("CPF deve ter 11 dígitos.")
+
+    # Rejeita sequências trivialmente inválidas (ex: 111.111.111-11)
     if cpf_digits == cpf_digits[0] * 11:
         raise ValueError("CPF inválido.")
 
+    # Cálculo do primeiro dígito verificador
     soma = sum(int(cpf_digits[i]) * (10 - i) for i in range(9))
     dig1 = (soma * 10) % 11
     dig1 = 0 if dig1 == 10 else dig1
 
+    # Cálculo do segundo dígito verificador
     soma = sum(int(cpf_digits[i]) * (11 - i) for i in range(10))
     dig2 = (soma * 10) % 11
     dig2 = 0 if dig2 == 10 else dig2
 
+    # Compara os dígitos calculados com os dois últimos do CPF informado
     if cpf_digits[-2:] != f"{dig1}{dig2}":
         raise ValueError("CPF inválido.")
 
     return cpf_digits
 
+
 def padronizar_whatsapp(whatsapp):
+    """Normaliza o número de WhatsApp para o formato +55XXXXXXXXXXX.
+    Aceita números com ou sem o prefixo 55, com DDD + número (10 ou 11 dígitos).
+    Retorna string vazia se o campo for vazio.
+    """
     digits = re.sub(r"\D", "", whatsapp or "")
+
     if digits == "":
         return ""
+
+    # Remove prefixo 55 se já presente e valida o tamanho restante
     if digits.startswith("55"):
         numero = digits[2:]
         if len(numero) not in (10, 11):
             raise ValueError("WhatsApp deve ter DDD + número.")
         return f"+55{numero}"
+
+    # Número sem prefixo: valida DDD + número
     if len(digits) not in (10, 11):
         raise ValueError("WhatsApp deve ter DDD + número.")
     return f"+55{digits}"
 
+
 async def chamar_agente_medico(mensagem: str, user_id: str = "medico_ui") -> str:
+    """Executa o agente médico de forma assíncrona para uma mensagem do chatbot.
+    Cria ou reutiliza sessão por user_id e retorna o texto da resposta final.
+    """
     session_id = f"sessao_{user_id}"
 
     try:
+        # Cria a sessão; ignora exceção se já existir
         await session_service.create_session(
             app_name="chat_medico_app",
             user_id=user_id,
@@ -92,6 +130,7 @@ async def chamar_agente_medico(mensagem: str, user_id: str = "medico_ui") -> str
 
     message = types.Content(role="user", parts=[types.Part(text=mensagem)])
 
+    # Itera pelos eventos do runner e captura a resposta final
     agen = runner.run_async(
         user_id=user_id,
         session_id=session_id,
@@ -108,11 +147,16 @@ async def chamar_agente_medico(mensagem: str, user_id: str = "medico_ui") -> str
                             return texto
                 return "Nao foi possivel obter resposta do agente."
     finally:
+        # Garante que o gerador assíncrono é fechado corretamente
         await agen.aclose()
 
     return "Nao foi possivel obter resposta do agente."
 
+
 def executar_corrotina(coro):
+    """Wrapper síncrono para rodar corrotinas dentro do Streamlit,
+    que não possui event loop ativo por padrão. Cria um loop isolado por chamada.
+    """
     loop = asyncio.new_event_loop()
     try:
         asyncio.set_event_loop(loop)
@@ -121,7 +165,11 @@ def executar_corrotina(coro):
     finally:
         loop.close()
 
+
 class PacienteInput(BaseModel):
+    """Modelo Pydantic para validação dos dados de cadastro de paciente.
+    Os field_validators garantem integridade antes de qualquer persistência.
+    """
     nome: str
     cpf: str
     idade: int
@@ -131,22 +179,28 @@ class PacienteInput(BaseModel):
 
     @field_validator("nome", "sexo", "historico")
     def campo_nao_vazio(cls, v):
+        """Rejeita campos obrigatórios em branco ou apenas com espaços."""
         if not v or not v.strip():
             raise ValueError("Campo obrigatório.")
         return v.strip()
 
     @field_validator("cpf")
     def cpf_valido(cls, v):
+        """Valida e normaliza o CPF usando a função validar_cpf."""
         return validar_cpf(v)
 
     @field_validator("whatsapp")
     def whatsapp_padronizado(cls, v):
+        """Padroniza o número de WhatsApp para o formato +55XXXXXXXXXXX."""
         return padronizar_whatsapp(v)
 
+
+# Carrega os dados de pacientes ao iniciar a aplicação
 dados = carregar_dados()
 
 st.title("Sistema de Registro de Pacientes")
 
+# Menu lateral com as três seções da aplicação
 menu = st.sidebar.selectbox(
     "Menu",
     [
@@ -156,10 +210,12 @@ menu = st.sidebar.selectbox(
     ]
 )
 
+
 if menu == "Criar novo paciente":
 
     st.header("Novo Registro de Paciente")
 
+    # Campos do formulário de cadastro
     nome = st.text_input("Nome do paciente")
     cpf = st.text_input("CPF")
     idade = st.number_input("Idade", 0, 120)
@@ -169,32 +225,32 @@ if menu == "Criar novo paciente":
 
     if st.button("Criar registro"):
         try:
+            # Valida todos os campos via Pydantic antes de salvar
             paciente_input = PacienteInput(
-                nome=nome,
-                cpf=cpf,
-                idade=idade,
-                whatsapp=whatsapp,
-                sexo=sexo,
-                historico=historico
+                nome=nome, cpf=cpf, idade=idade,
+                whatsapp=whatsapp, sexo=sexo, historico=historico
             )
         except ValidationError as exc:
+            # Exibe cada erro de validação individualmente na tela
             for erro in exc.errors():
                 st.error(erro.get("msg", "Dados inválidos."))
         else:
             cpf_normalizado = paciente_input.cpf
+
+            # Impede cadastro duplicado pelo CPF
             if cpf_normalizado in dados:
                 st.error("Paciente já cadastrado!")
             else:
+                # Cria a estrutura inicial do paciente e salva no JSON
                 dados[cpf_normalizado] = {
                     "nome": paciente_input.nome,
                     "idade": paciente_input.idade,
                     "whatsapp": paciente_input.whatsapp,
                     "sexo": paciente_input.sexo,
                     "historico": paciente_input.historico,
-                    "consultas": [],
-                    "agendamentos": []
+                    "consultas": [],       # Lista de consultas realizadas
+                    "agendamentos": []     # Lista de consultas agendadas
                 }
-
                 salvar_dados(dados)
                 st.success("Paciente criado com sucesso!")
 
@@ -204,6 +260,7 @@ elif menu == "Acessar paciente existente":
 
     cpf_busca = st.text_input("Digite o CPF do paciente")
 
+    # Valida o CPF digitado antes de fazer a busca
     cpf_busca_normalizado = None
     if cpf_busca:
         try:
@@ -217,6 +274,7 @@ elif menu == "Acessar paciente existente":
 
         st.subheader("Informações do Paciente")
 
+        # Exibe os dados cadastrais do paciente
         st.write("Nome:", paciente["nome"])
         st.write("Idade:", paciente["idade"])
         st.write("Sexo:", paciente["sexo"])
@@ -225,6 +283,7 @@ elif menu == "Acessar paciente existente":
 
         st.divider()
 
+        # Exibe alertas registrados pelo agente do paciente, do mais recente ao mais antigo
         alertas_medico = paciente.get("alertas_medico", [])
         if alertas_medico:
             st.subheader("Alertas do médico")
@@ -234,6 +293,7 @@ elif menu == "Acessar paciente existente":
                 st.warning(f"{data_registro} - {motivo}")
             st.divider()
 
+        # Filtra apenas agendamentos futuros e os ordena por data/hora
         agendamentos = paciente.get("agendamentos", [])
         agendamentos_futuros = []
         agora = datetime.now()
@@ -245,6 +305,7 @@ elif menu == "Acessar paciente existente":
 
         agendamentos_futuros.sort(key=lambda item: item[0])
 
+        # Exibe o próximo agendamento em destaque e os dois seguintes abaixo
         if agendamentos_futuros:
             st.subheader("Próximos agendamentos")
             proximo_dt, proximo_agendamento = agendamentos_futuros[0]
@@ -254,6 +315,7 @@ elif menu == "Acessar paciente existente":
                 f"com {proximo_agendamento.get('profissional', '')}"
             )
 
+            # Exibe mais dois agendamentos futuros (se existirem)
             for data_hora, agendamento in agendamentos_futuros[1:3]:
                 st.write(
                     f"- {data_hora.strftime('%d/%m/%Y %H:%M')} - "
@@ -262,18 +324,20 @@ elif menu == "Acessar paciente existente":
 
             st.divider()
 
+        # Três abas de ação para o médico: registrar, agendar e ver histórico
         tabs = st.tabs(["Registrar consulta", "Marcar consulta", "Histórico"])
 
         with tabs[0]:
             st.subheader("Registrar nova consulta")
 
+            # Campos do formulário de registro de consulta
             sintomas = st.text_area("Sintomas relatados")
             diagnostico = st.text_area("Diagnóstico")
             tratamento = st.text_area("Tratamento / Prescrição")
             observacoes = st.text_area("Observações adicionais")
 
             if st.button("Salvar consulta"):
-
+                # Cria o registro da consulta com timestamp automático
                 consulta = {
                     "data": datetime.now().strftime("%d/%m/%Y %H:%M"),
                     "sintomas": sintomas,
@@ -281,16 +345,14 @@ elif menu == "Acessar paciente existente":
                     "tratamento": tratamento,
                     "observacoes": observacoes
                 }
-
                 dados[cpf_busca_normalizado]["consultas"].append(consulta)
-
                 salvar_dados(dados)
-
                 st.success("Consulta registrada com sucesso!")
 
         with tabs[1]:
             st.subheader("Marcar uma consulta")
 
+            # Campos do formulário de agendamento
             data_consulta = st.date_input("Data da consulta")
             hora_consulta = st.time_input("Horário da consulta")
             especialidade = st.text_input("Especialidade")
@@ -299,12 +361,17 @@ elif menu == "Acessar paciente existente":
             motivo = st.text_area("Motivo / Observações")
 
             if st.button("Agendar consulta"):
+                # Combina data e hora em um único datetime para validações
                 data_hora_dt = datetime.combine(data_consulta, hora_consulta)
                 data_hora = data_hora_dt.strftime("%d/%m/%Y %H:%M")
 
                 erros = []
+
+                # Valida que a data é futura
                 if data_hora_dt < datetime.now():
                     erros.append("A data e horário devem ser no futuro.")
+
+                # Valida campos obrigatórios
                 if not especialidade.strip():
                     erros.append("Informe a especialidade.")
                 if not profissional.strip():
@@ -312,6 +379,7 @@ elif menu == "Acessar paciente existente":
                 if not local.strip():
                     erros.append("Informe o local.")
 
+                # Verifica conflito de horário com agendamentos existentes
                 conflitos = any(
                     a.get("data_hora") == data_hora
                     for a in dados[cpf_busca_normalizado].get("agendamentos", [])
@@ -323,6 +391,7 @@ elif menu == "Acessar paciente existente":
                     for erro in erros:
                         st.error(erro)
                 else:
+                    # Cria e salva o agendamento se não houver erros
                     agendamento = {
                         "data_hora": data_hora,
                         "especialidade": especialidade,
@@ -330,20 +399,19 @@ elif menu == "Acessar paciente existente":
                         "local": local,
                         "motivo": motivo
                     }
-
                     dados[cpf_busca_normalizado].setdefault("agendamentos", [])
                     dados[cpf_busca_normalizado]["agendamentos"].append(agendamento)
-
                     salvar_dados(dados)
-
                     st.success("Consulta agendada com sucesso!")
 
         with tabs[2]:
+            # Sub-abas para separar consultas realizadas de agendadas
             historico_tabs = st.tabs(["Consultas realizadas", "Consultas agendadas"])
 
             with historico_tabs[0]:
                 st.subheader("Histórico de consultas")
 
+                # Exibe consultas do mais recente ao mais antigo usando expanders
                 for consulta in reversed(paciente["consultas"]):
                     with st.expander(f"Consulta - {consulta['data']}"):
                         st.write("Sintomas:", consulta["sintomas"])
@@ -354,6 +422,7 @@ elif menu == "Acessar paciente existente":
             with historico_tabs[1]:
                 st.subheader("Agendamentos")
 
+                # Exibe todos os agendamentos (incluindo passados) em expanders
                 for agendamento in reversed(paciente.get("agendamentos", [])):
                     with st.expander(f"Consulta marcada - {agendamento['data_hora']}"):
                         st.write("Especialidade:", agendamento["especialidade"])
@@ -369,9 +438,11 @@ elif menu == "Chatbot do medico":
     st.header("Chatbot do medico")
     st.caption("Converse com o agente medico sobre o paciente. Inclua o CPF na mensagem.")
 
+    # Inicializa o histórico de chat na session_state se ainda não existir
     if "chat_medico" not in st.session_state:
         st.session_state.chat_medico = []
 
+    # Renderiza todas as mensagens anteriores da conversa
     for item in st.session_state.chat_medico:
         with st.chat_message(item["role"]):
             st.write(item["content"])
@@ -379,13 +450,17 @@ elif menu == "Chatbot do medico":
     mensagem = st.chat_input("Digite sua solicitacao")
 
     if mensagem:
+        # Adiciona a mensagem do usuário ao histórico e exibe imediatamente
         st.session_state.chat_medico.append({"role": "user", "content": mensagem})
         with st.chat_message("user"):
             st.write(mensagem)
 
+        # Executa o agente médico de forma síncrona via wrapper de event loop
         resposta = executar_corrotina(
             chamar_agente_medico(mensagem, user_id="medico_streamlit")
         )
+
+        # Adiciona a resposta ao histórico e exibe na interface
         st.session_state.chat_medico.append({"role": "assistant", "content": resposta})
         with st.chat_message("assistant"):
             st.write(resposta)
